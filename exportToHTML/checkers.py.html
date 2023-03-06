@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>checkers.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #f780bf;}
+.s1 { color: #f8f8f2;}
+.s2 { color: #6272a4; font-style: italic;}
+.s3 { color: #feff80;}
+.s4 { color: #9580ff;}
+</style>
+</head>
+<body bgcolor="#282a36">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+checkers.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pygame</span>
+<span class="s0">from </span><span class="s1">constants </span><span class="s0">import </span><span class="s1">width, height, square_size, Black</span>
+<span class="s0">from </span><span class="s1">Board </span><span class="s0">import </span><span class="s1">board</span>
+<span class="s0">from </span><span class="s1">game </span><span class="s0">import </span><span class="s1">Game</span>
+
+<span class="s2"># Start Program</span>
+<span class="s1">pygame.init()</span>
+
+<span class="s2"># Screen</span>
+<span class="s1">win </span><span class="s0">= </span><span class="s1">pygame.display.set_mode((width, height))</span>
+
+<span class="s2"># Title and Icon</span>
+<span class="s1">pygame.display.set_caption(</span><span class="s3">'Checkers'</span><span class="s1">)</span>
+<span class="s1">icon </span><span class="s0">= </span><span class="s1">pygame.image.load(</span><span class="s3">'checkers.png'</span><span class="s1">)</span>
+<span class="s1">pygame.display.set_icon(icon)</span>
+<span class="s1">game </span><span class="s0">= </span><span class="s1">Game(win)</span>
+
+<span class="s0">def </span><span class="s1">get_row_col_from_mouse(pos)</span><span class="s0">:</span>
+    <span class="s1">x, y </span><span class="s0">= </span><span class="s1">pos</span>
+    <span class="s1">row </span><span class="s0">= </span><span class="s1">y </span><span class="s0">// </span><span class="s1">square_size</span>
+    <span class="s1">col </span><span class="s0">= </span><span class="s1">x </span><span class="s0">// </span><span class="s1">square_size</span>
+    <span class="s0">return </span><span class="s1">row, col</span>
+
+<span class="s2"># Game Loop</span>
+<span class="s1">running </span><span class="s0">= True</span>
+<span class="s0">while </span><span class="s1">running</span><span class="s0">:</span>
+    <span class="s0">for </span><span class="s1">event </span><span class="s0">in </span><span class="s1">pygame.event.get()</span><span class="s0">:</span>
+
+        <span class="s0">if </span><span class="s1">game.winner() </span><span class="s0">!= </span><span class="s4">0</span><span class="s0">:</span>
+            <span class="s1">print(game.winner())</span>
+            <span class="s1">run </span><span class="s0">= False</span>
+
+        <span class="s0">if </span><span class="s1">event.type </span><span class="s0">== </span><span class="s1">pygame.QUIT</span><span class="s0">:</span>
+            <span class="s1">running </span><span class="s0">= False</span>
+
+        <span class="s0">if </span><span class="s1">event.type </span><span class="s0">== </span><span class="s1">pygame.MOUSEBUTTONDOWN</span><span class="s0">:</span>
+            <span class="s1">pos </span><span class="s0">= </span><span class="s1">pygame.mouse.get_pos()</span>
+            <span class="s1">row, col </span><span class="s0">= </span><span class="s1">get_row_col_from_mouse(pos)</span>
+            <span class="s1">game.select(row, col)</span>
+
+    <span class="s1">game.update()</span>
+
+
+</pre>
+</body>
+</html>

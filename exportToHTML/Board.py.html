@@ -1,0 +1,180 @@
+<html>
+<head>
+<title>Board.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #f780bf;}
+.s1 { color: #f8f8f2;}
+.s2 { color: #9580ff;}
+.s3 { color: #6272a4; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#282a36">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Board.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pygame</span>
+<span class="s0">from </span><span class="s1">constants </span><span class="s0">import </span><span class="s1">Black, rows, lsquare, square_size, dsquare, cols, White</span>
+<span class="s0">from </span><span class="s1">piece </span><span class="s0">import </span><span class="s1">Piece</span>
+
+
+<span class="s0">class </span><span class="s1">board</span><span class="s0">:</span>
+    <span class="s0">def </span><span class="s1">__init__(self)</span><span class="s0">:</span>
+        <span class="s1">self.board </span><span class="s0">= </span><span class="s1">[]</span>
+        <span class="s1">self.black_left </span><span class="s0">= </span><span class="s1">self.white_left </span><span class="s0">= </span><span class="s2">12</span>
+        <span class="s1">self.black_kings </span><span class="s0">= </span><span class="s1">self.white_kings </span><span class="s0">= </span><span class="s2">0</span>
+        <span class="s1">self.create_board()</span>
+
+    <span class="s3"># Draws Squares of Board</span>
+    <span class="s0">def </span><span class="s1">draw_squares(self, win)</span><span class="s0">:</span>
+        <span class="s1">win.fill(lsquare)</span>
+        <span class="s0">for </span><span class="s1">row </span><span class="s0">in </span><span class="s1">range(rows)</span><span class="s0">:</span>
+            <span class="s0">for </span><span class="s1">col </span><span class="s0">in </span><span class="s1">range(row </span><span class="s0">% </span><span class="s2">2</span><span class="s1">, cols, </span><span class="s2">2</span><span class="s1">)</span><span class="s0">:</span>
+                <span class="s1">pygame.draw.rect(win, dsquare, (row </span><span class="s0">* </span><span class="s1">square_size, col </span><span class="s0">* </span><span class="s1">square_size, square_size, square_size))</span>
+
+    <span class="s3"># Moves</span>
+    <span class="s0">def </span><span class="s1">move(self, piece, row, col)</span><span class="s0">:</span>
+        <span class="s1">self.board[piece.row][piece.col], self.board[row][col] </span><span class="s0">= </span><span class="s1">self.board[row][col], self.board[piece.row][piece.col]</span>
+        <span class="s1">piece.move(row, col)</span>
+
+        <span class="s0">if </span><span class="s1">row </span><span class="s0">== </span><span class="s1">rows </span><span class="s0">- </span><span class="s2">1 </span><span class="s0">or </span><span class="s1">row </span><span class="s0">== </span><span class="s2">0</span><span class="s0">:</span>
+            <span class="s1">piece.make_king()</span>
+            <span class="s0">if </span><span class="s1">piece.color </span><span class="s0">== </span><span class="s1">White</span><span class="s0">:</span>
+                <span class="s1">self.white_kings </span><span class="s0">+= </span><span class="s2">1</span>
+            <span class="s0">else:</span>
+                <span class="s1">self.black_kings </span><span class="s0">+= </span><span class="s2">1</span>
+
+    <span class="s3"># Selects Piece</span>
+    <span class="s0">def </span><span class="s1">get_piece(self, row, col)</span><span class="s0">:</span>
+        <span class="s0">return </span><span class="s1">self.board[row][col]</span>
+
+    <span class="s3"># Draws Pieces on board</span>
+    <span class="s0">def </span><span class="s1">create_board(self)</span><span class="s0">:</span>
+        <span class="s0">for </span><span class="s1">row </span><span class="s0">in </span><span class="s1">range(rows)</span><span class="s0">:</span>
+            <span class="s1">self.board.append([])</span>
+            <span class="s0">for </span><span class="s1">col </span><span class="s0">in </span><span class="s1">range(cols)</span><span class="s0">:</span>
+                <span class="s0">if </span><span class="s1">col </span><span class="s0">% </span><span class="s2">2 </span><span class="s0">== </span><span class="s1">((row </span><span class="s0">+ </span><span class="s2">1</span><span class="s1">) </span><span class="s0">% </span><span class="s2">2</span><span class="s1">)</span><span class="s0">:</span>
+                    <span class="s0">if </span><span class="s1">row </span><span class="s0">&lt; </span><span class="s2">3</span><span class="s0">:</span>
+                        <span class="s1">self.board[row].append(Piece(row, col, White))</span>
+                    <span class="s0">elif </span><span class="s1">row </span><span class="s0">&gt; </span><span class="s2">4</span><span class="s0">:</span>
+                        <span class="s1">self.board[row].append(Piece(row, col, Black))</span>
+                    <span class="s0">else:</span>
+                        <span class="s1">self.board[row].append(</span><span class="s2">0</span><span class="s1">)</span>
+                <span class="s0">else:</span>
+                    <span class="s1">self.board[row].append(</span><span class="s2">0</span><span class="s1">)</span>
+
+    <span class="s3"># draws board</span>
+    <span class="s0">def </span><span class="s1">draw(self, win)</span><span class="s0">:</span>
+        <span class="s1">self.draw_squares(win)</span>
+        <span class="s0">for </span><span class="s1">row </span><span class="s0">in </span><span class="s1">range(rows)</span><span class="s0">:</span>
+            <span class="s0">for </span><span class="s1">col </span><span class="s0">in </span><span class="s1">range(cols)</span><span class="s0">:</span>
+                <span class="s1">piece </span><span class="s0">= </span><span class="s1">self.board[row][col]</span>
+                <span class="s0">if </span><span class="s1">piece </span><span class="s0">!= </span><span class="s2">0</span><span class="s0">:</span>
+                    <span class="s1">piece.draw(win)</span>
+
+    <span class="s3"># Removes pieces that were jumped over</span>
+    <span class="s0">def </span><span class="s1">remove(self, pieces)</span><span class="s0">:</span>
+        <span class="s0">for </span><span class="s1">piece </span><span class="s0">in </span><span class="s1">pieces</span><span class="s0">:</span>
+            <span class="s1">self.board[piece.row][piece.col] </span><span class="s0">= </span><span class="s2">0</span>
+            <span class="s0">if </span><span class="s1">piece </span><span class="s0">!= </span><span class="s2">0</span><span class="s0">:</span>
+                <span class="s0">if </span><span class="s1">piece.color </span><span class="s0">== </span><span class="s1">Black</span><span class="s0">:</span>
+                    <span class="s1">self.black_left </span><span class="s0">-= </span><span class="s2">1</span>
+                <span class="s0">else:</span>
+                    <span class="s1">self.white_left </span><span class="s0">-= </span><span class="s2">1</span>
+
+    <span class="s3"># Unfinished</span>
+    <span class="s0">def </span><span class="s1">winner(self)</span><span class="s0">:</span>
+        <span class="s0">if </span><span class="s1">self.black_left </span><span class="s0">&lt;= </span><span class="s2">0</span><span class="s0">:</span>
+            <span class="s0">return </span><span class="s1">White</span>
+        <span class="s0">elif </span><span class="s1">self.white_left </span><span class="s0">&lt;= </span><span class="s2">0</span><span class="s0">:</span>
+            <span class="s0">return </span><span class="s1">Black</span>
+
+        <span class="s0">return None</span>
+
+    <span class="s3"># Gets Valid Moves</span>
+    <span class="s0">def </span><span class="s1">get_valid_moves(self, piece)</span><span class="s0">:</span>
+        <span class="s1">moves </span><span class="s0">= </span><span class="s1">{}</span>
+        <span class="s1">left </span><span class="s0">= </span><span class="s1">piece.col </span><span class="s0">- </span><span class="s2">1</span>
+        <span class="s1">right </span><span class="s0">= </span><span class="s1">piece.col </span><span class="s0">+ </span><span class="s2">1</span>
+        <span class="s1">row </span><span class="s0">= </span><span class="s1">piece.row</span>
+
+        <span class="s0">if </span><span class="s1">piece.color </span><span class="s0">== </span><span class="s1">Black </span><span class="s0">or </span><span class="s1">piece.king</span><span class="s0">:</span>
+            <span class="s1">moves.update(self._traverse_left(row </span><span class="s0">- </span><span class="s2">1</span><span class="s1">, max(row </span><span class="s0">- </span><span class="s2">3</span><span class="s1">, </span><span class="s0">-</span><span class="s2">1</span><span class="s1">), </span><span class="s0">-</span><span class="s2">1</span><span class="s1">, piece.color, left))</span>
+            <span class="s1">moves.update(self._traverse_right(row </span><span class="s0">- </span><span class="s2">1</span><span class="s1">, max(row </span><span class="s0">- </span><span class="s2">3</span><span class="s1">, </span><span class="s0">-</span><span class="s2">1</span><span class="s1">), </span><span class="s0">-</span><span class="s2">1</span><span class="s1">, piece.color, right))</span>
+        <span class="s0">if </span><span class="s1">piece.color </span><span class="s0">== </span><span class="s1">White </span><span class="s0">or </span><span class="s1">piece.king</span><span class="s0">:</span>
+            <span class="s1">moves.update(self._traverse_left(row </span><span class="s0">+ </span><span class="s2">1</span><span class="s1">, min(row </span><span class="s0">+ </span><span class="s2">3</span><span class="s1">, rows), </span><span class="s2">1</span><span class="s1">, piece.color, left))</span>
+            <span class="s1">moves.update(self._traverse_right(row </span><span class="s0">+ </span><span class="s2">1</span><span class="s1">, min(row </span><span class="s0">+ </span><span class="s2">3</span><span class="s1">, rows), </span><span class="s2">1</span><span class="s1">, piece.color, right))</span>
+
+        <span class="s0">return </span><span class="s1">moves</span>
+
+    <span class="s3"># Moves left</span>
+    <span class="s0">def </span><span class="s1">_traverse_left(self, start, stop, step, color, left, skipped</span><span class="s0">=</span><span class="s1">[])</span><span class="s0">:</span>
+        <span class="s1">moves </span><span class="s0">= </span><span class="s1">{}</span>
+        <span class="s1">last </span><span class="s0">= </span><span class="s1">[]</span>
+        <span class="s0">for </span><span class="s1">r </span><span class="s0">in </span><span class="s1">range(start, stop, step)</span><span class="s0">:</span>
+            <span class="s0">if </span><span class="s1">left </span><span class="s0">&lt; </span><span class="s2">0</span><span class="s0">:</span>
+                <span class="s0">break</span>
+
+            <span class="s1">current </span><span class="s0">= </span><span class="s1">self.board[r][left]</span>
+            <span class="s0">if </span><span class="s1">current </span><span class="s0">== </span><span class="s2">0</span><span class="s0">:</span>
+                <span class="s0">if </span><span class="s1">skipped </span><span class="s0">and not </span><span class="s1">last</span><span class="s0">:</span>
+                    <span class="s0">break</span>
+                <span class="s0">elif </span><span class="s1">skipped</span><span class="s0">:</span>
+                    <span class="s1">moves[(r, left)] </span><span class="s0">= </span><span class="s1">last </span><span class="s0">+ </span><span class="s1">skipped</span>
+                <span class="s0">else:</span>
+                    <span class="s1">moves[(r, left)] </span><span class="s0">= </span><span class="s1">last</span>
+
+                <span class="s0">if </span><span class="s1">last</span><span class="s0">:</span>
+                    <span class="s0">if </span><span class="s1">step </span><span class="s0">== -</span><span class="s2">1</span><span class="s0">:</span>
+                        <span class="s1">row </span><span class="s0">= </span><span class="s1">max(r </span><span class="s0">- </span><span class="s2">3</span><span class="s1">, </span><span class="s2">0</span><span class="s1">)</span>
+                    <span class="s0">else:</span>
+                        <span class="s1">row </span><span class="s0">= </span><span class="s1">min(r </span><span class="s0">+ </span><span class="s2">3</span><span class="s1">, rows)</span>
+                    <span class="s1">moves.update(self._traverse_left(r </span><span class="s0">+ </span><span class="s1">step, row, step, color, left </span><span class="s0">- </span><span class="s2">1</span><span class="s1">, skipped</span><span class="s0">=</span><span class="s1">last))</span>
+                    <span class="s1">moves.update(self._traverse_right(r </span><span class="s0">+ </span><span class="s1">step, row, step, color, left </span><span class="s0">+ </span><span class="s2">1</span><span class="s1">, skipped</span><span class="s0">=</span><span class="s1">last))</span>
+                <span class="s0">break</span>
+            <span class="s0">elif </span><span class="s1">current.color </span><span class="s0">== </span><span class="s1">color</span><span class="s0">:</span>
+                <span class="s0">break</span>
+            <span class="s0">else:</span>
+                <span class="s1">last </span><span class="s0">= </span><span class="s1">[current]</span>
+
+            <span class="s1">left </span><span class="s0">-= </span><span class="s2">1</span>
+
+        <span class="s0">return </span><span class="s1">moves</span>
+
+    <span class="s3"># Moves Right</span>
+    <span class="s0">def </span><span class="s1">_traverse_right(self, start, stop, step, color, right, skipped</span><span class="s0">=</span><span class="s1">[])</span><span class="s0">:</span>
+        <span class="s1">moves </span><span class="s0">= </span><span class="s1">{}</span>
+        <span class="s1">last </span><span class="s0">= </span><span class="s1">[]</span>
+        <span class="s0">for </span><span class="s1">r </span><span class="s0">in </span><span class="s1">range(start, stop, step)</span><span class="s0">:</span>
+            <span class="s0">if </span><span class="s1">right </span><span class="s0">&gt;= </span><span class="s1">cols</span><span class="s0">:</span>
+                <span class="s0">break</span>
+
+            <span class="s1">current </span><span class="s0">= </span><span class="s1">self.board[r][right]</span>
+            <span class="s0">if </span><span class="s1">current </span><span class="s0">== </span><span class="s2">0</span><span class="s0">:</span>
+                <span class="s0">if </span><span class="s1">skipped </span><span class="s0">and not </span><span class="s1">last</span><span class="s0">:</span>
+                    <span class="s0">break</span>
+                <span class="s0">elif </span><span class="s1">skipped</span><span class="s0">:</span>
+                    <span class="s1">moves[(r, right)] </span><span class="s0">= </span><span class="s1">last </span><span class="s0">+ </span><span class="s1">skipped</span>
+                <span class="s0">else:</span>
+                    <span class="s1">moves[(r, right)] </span><span class="s0">= </span><span class="s1">last</span>
+
+                <span class="s0">if </span><span class="s1">last</span><span class="s0">:</span>
+                    <span class="s0">if </span><span class="s1">step </span><span class="s0">== -</span><span class="s2">1</span><span class="s0">:</span>
+                        <span class="s1">row </span><span class="s0">= </span><span class="s1">max(r </span><span class="s0">- </span><span class="s2">3</span><span class="s1">, </span><span class="s2">0</span><span class="s1">)</span>
+                    <span class="s0">else:</span>
+                        <span class="s1">row </span><span class="s0">= </span><span class="s1">min(r </span><span class="s0">+ </span><span class="s2">3</span><span class="s1">, rows)</span>
+                    <span class="s1">moves.update(self._traverse_left(r </span><span class="s0">+ </span><span class="s1">step, row, step, color, right </span><span class="s0">- </span><span class="s2">1</span><span class="s1">, skipped</span><span class="s0">=</span><span class="s1">last))</span>
+                    <span class="s1">moves.update(self._traverse_right(r </span><span class="s0">+ </span><span class="s1">step, row, step, color, right </span><span class="s0">+ </span><span class="s2">1</span><span class="s1">, skipped</span><span class="s0">=</span><span class="s1">last))</span>
+                <span class="s0">break</span>
+            <span class="s0">elif </span><span class="s1">current.color </span><span class="s0">== </span><span class="s1">color</span><span class="s0">:</span>
+                <span class="s0">break</span>
+            <span class="s0">else:</span>
+                <span class="s1">last </span><span class="s0">= </span><span class="s1">[current]</span>
+
+            <span class="s1">right </span><span class="s0">+= </span><span class="s2">1</span>
+
+        <span class="s0">return </span><span class="s1">moves</span></pre>
+</body>
+</html>

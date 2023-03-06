@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>game.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #f780bf;}
+.s1 { color: #f8f8f2;}
+.s2 { color: #6272a4; font-style: italic;}
+.s3 { color: #9580ff;}
+</style>
+</head>
+<body bgcolor="#282a36">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+game.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pygame</span>
+<span class="s0">from </span><span class="s1">constants </span><span class="s0">import </span><span class="s1">White, Black, Blue, square_size</span>
+<span class="s0">from </span><span class="s1">Board </span><span class="s0">import </span><span class="s1">board</span>
+
+<span class="s0">class </span><span class="s1">Game</span><span class="s0">:</span>
+    <span class="s0">def </span><span class="s1">__init__(self, win)</span><span class="s0">:</span>
+        <span class="s1">self._init()</span>
+        <span class="s1">self.win </span><span class="s0">= </span><span class="s1">win</span>
+
+    <span class="s0">def </span><span class="s1">update(self)</span><span class="s0">:</span>
+        <span class="s1">self.board.draw(self.win)</span>
+        <span class="s1">self.draw_valid_moves(self.valid_moves)</span>
+        <span class="s1">pygame.display.update()</span>
+
+
+    <span class="s0">def </span><span class="s1">_init(self)</span><span class="s0">:</span>
+        <span class="s1">self.selected </span><span class="s0">= None</span>
+        <span class="s1">self.board </span><span class="s0">= </span><span class="s1">board()</span>
+        <span class="s1">self.turn </span><span class="s0">= </span><span class="s1">Black</span>
+        <span class="s1">self.valid_moves </span><span class="s0">= </span><span class="s1">{}</span>
+
+    <span class="s2"># Unfinished</span>
+    <span class="s0">def </span><span class="s1">winner(self)</span><span class="s0">:</span>
+        <span class="s0">return </span><span class="s1">self.board.winner()</span>
+
+    <span class="s0">def </span><span class="s1">reset(self)</span><span class="s0">:</span>
+        <span class="s1">self._init()</span>
+
+    <span class="s2"># Movement Recursion Loop</span>
+    <span class="s0">def </span><span class="s1">select(self, row, col)</span><span class="s0">:</span>
+        <span class="s0">if </span><span class="s1">self.selected</span><span class="s0">:</span>
+            <span class="s1">result </span><span class="s0">= </span><span class="s1">self._move(row, col)</span>
+            <span class="s0">if not </span><span class="s1">result</span><span class="s0">:</span>
+                <span class="s1">self.selected </span><span class="s0">= None</span>
+                <span class="s1">self.select(row, col)</span>
+
+        <span class="s1">piece </span><span class="s0">= </span><span class="s1">self.board.get_piece(row, col)</span>
+        <span class="s0">if </span><span class="s1">piece </span><span class="s0">!= </span><span class="s3">0 </span><span class="s0">and </span><span class="s1">piece.color </span><span class="s0">== </span><span class="s1">self.turn</span><span class="s0">:</span>
+            <span class="s1">self.selected </span><span class="s0">= </span><span class="s1">piece</span>
+            <span class="s1">self.valid_moves </span><span class="s0">= </span><span class="s1">self.board.get_valid_moves(piece)</span>
+            <span class="s0">return True</span>
+
+        <span class="s0">return False</span>
+
+    <span class="s2"># Moving and Double Jumping</span>
+    <span class="s0">def </span><span class="s1">_move(self, row, col)</span><span class="s0">:</span>
+        <span class="s1">piece </span><span class="s0">= </span><span class="s1">self.board.get_piece(row, col)</span>
+        <span class="s0">if </span><span class="s1">self.selected </span><span class="s0">and </span><span class="s1">piece </span><span class="s0">== </span><span class="s3">0 </span><span class="s0">and </span><span class="s1">(row, col) </span><span class="s0">in </span><span class="s1">self.valid_moves</span><span class="s0">:</span>
+            <span class="s1">self.board.move(self.selected, row, col)</span>
+            <span class="s1">skipped </span><span class="s0">= </span><span class="s1">self.valid_moves[(row, col)]</span>
+            <span class="s0">if </span><span class="s1">skipped</span><span class="s0">:</span>
+                <span class="s1">self.board.remove(skipped)</span>
+            <span class="s1">self.change_turn()</span>
+        <span class="s0">else:</span>
+            <span class="s0">return False</span>
+
+        <span class="s0">return True</span>
+
+    <span class="s2"># Draws dots where valid moves are</span>
+    <span class="s0">def </span><span class="s1">draw_valid_moves(self, moves)</span><span class="s0">:</span>
+        <span class="s0">for </span><span class="s1">move </span><span class="s0">in </span><span class="s1">moves</span><span class="s0">:</span>
+            <span class="s1">row, col </span><span class="s0">= </span><span class="s1">move</span>
+            <span class="s1">pygame.draw.circle(self.win, Blue, (col </span><span class="s0">* </span><span class="s1">square_size </span><span class="s0">+ </span><span class="s1">square_size</span><span class="s0">//</span><span class="s3">2</span><span class="s1">, row </span><span class="s0">* </span><span class="s1">square_size </span><span class="s0">+ </span><span class="s1">square_size</span><span class="s0">//</span><span class="s3">2</span><span class="s1">), </span><span class="s3">15</span><span class="s1">)</span>
+
+    <span class="s2"># Changes Turns</span>
+    <span class="s0">def </span><span class="s1">change_turn(self)</span><span class="s0">:</span>
+        <span class="s1">self.valid_moves </span><span class="s0">= </span><span class="s1">{}</span>
+        <span class="s0">if </span><span class="s1">self.turn </span><span class="s0">== </span><span class="s1">Black</span><span class="s0">:</span>
+            <span class="s1">self.turn </span><span class="s0">= </span><span class="s1">White</span>
+        <span class="s0">else:</span>
+            <span class="s1">self.turn </span><span class="s0">= </span><span class="s1">Black</span></pre>
+</body>
+</html>
